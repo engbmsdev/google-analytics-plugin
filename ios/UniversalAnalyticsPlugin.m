@@ -13,6 +13,7 @@
     _debugMode = false;
     _trackerStarted = false;
     _customDimensions = nil;
+	_latestTrackerId = nil;
 }
 
 - (void) startTrackerWithId: (CDVInvokedUrlCommand*)command
@@ -25,6 +26,7 @@
     [[GAI sharedInstance] trackerWithTrackingId:accountId];
 
     _trackerStarted = true;
+	_latestTrackerId = accountId;
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     /* NSLog(@"successfully started GAI tracker"); */
@@ -60,7 +62,7 @@
     return;
   }
 
-  id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+  id<GAITracker> tracker = [[GAI sharedInstance] trackerWithTrackingId:_latestTrackerId];
   [tracker set:@"&uid" value: userId];
 
   pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -110,7 +112,7 @@
     if ([command.arguments count] > 3)
         value = [command.arguments objectAtIndex:3];
 
-    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    id<GAITracker> tracker = [[GAI sharedInstance] trackerWithTrackingId:_latestTrackerId];
 
     [self addCustomDimensionsToTracker:tracker];
 
@@ -143,7 +145,7 @@
     if ([command.arguments count] > 1)
         fatal = [command.arguments objectAtIndex:1];
 
-    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    id<GAITracker> tracker = [[GAI sharedInstance] trackerWithTrackingId:_latestTrackerId];
 
     [self addCustomDimensionsToTracker:tracker];
 
@@ -167,7 +169,7 @@
 
     NSString* screenName = [command.arguments objectAtIndex:0];
 
-    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    id<GAITracker> tracker = [[GAI sharedInstance] trackerWithTrackingId:_latestTrackerId];
 
     [self addCustomDimensionsToTracker:tracker];
 
@@ -206,7 +208,7 @@
     if ([command.arguments count] > 3)
         label = [command.arguments objectAtIndex:3];
 
-    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    id<GAITracker> tracker = [[GAI sharedInstance] trackerWithTrackingId:_latestTrackerId];
 
     [self addCustomDimensionsToTracker:tracker];
 
@@ -256,7 +258,7 @@
     if ([command.arguments count] > 5)
         currencyCode = [command.arguments objectAtIndex:5];
 
-    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    id<GAITracker> tracker = [[GAI sharedInstance] trackerWithTrackingId:_latestTrackerId];
 
 
     [tracker send:[[GAIDictionaryBuilder createTransactionWithId:transactionId             // (NSString) Transaction ID
@@ -313,7 +315,7 @@
     if ([command.arguments count] > 6)
         currencyCode = [command.arguments objectAtIndex:6];
 
-    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    id<GAITracker> tracker = [[GAI sharedInstance] trackerWithTrackingId:_latestTrackerId];
 
 
     [tracker send:[[GAIDictionaryBuilder createItemWithTransactionId:transactionId         // (NSString) Transaction ID
